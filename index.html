@@ -761,8 +761,16 @@ async function loadProds(){
   loader(false);renderAll();
 }
 
-async function purgeJsDelivr(){
-  try{await fetch(`https://purge.jsdelivr.net/gh/${GH.user}/${GH.repo}@main/${GH.path}`);}catch{}
+async function pushVersionFile(commitSha){
+  // يكتب commit SHA في _v.txt ليعرف المتجر الإصدار الدقيق
+  try{
+    const vUrl=`https://api.github.com/repos/${GH.user}/${GH.repo}/contents/_v.txt`;
+    let vSha='';
+    try{const vr=await fetch(vUrl,{headers:ghH()});if(vr.ok){const vd=await vr.json();vSha=vd.sha;}}catch{}
+    const body={message:'chore: update version',content:btoa(commitSha)};
+    if(vSha)body.sha=vSha;
+    await fetch(vUrl,{method:'PUT',headers:ghH(),body:JSON.stringify(body)});
+  }catch{}
 }
 
 async function pushToGH(msg='✅ تم الحفظ'){
@@ -772,7 +780,12 @@ async function pushToGH(msg='✅ تم الحفظ'){
   const url=`https://api.github.com/repos/${GH.user}/${GH.repo}/contents/${GH.path}`;
   try{
     const r=await fetch(url,{method:'PUT',headers:ghH(),body:JSON.stringify({message:'Update products',content:b64,sha})});
-    if(r.ok){const d=await r.json();sha=d.content.sha;renderAll();toast(msg,'success');purgeJsDelivr();}
+    if(r.ok){
+      const d=await r.json();
+      sha=d.content.sha;
+      renderAll();toast(msg,'success');
+      pushVersionFile(d.commit.sha); // commit SHA للمتجر
+    }
     else toast('❌ خطأ أثناء الحفظ','danger');
   }catch{toast('❌ تعذّر الاتصال','danger');}
   loader(false);
