@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>إدارة المتجر</title>
+<meta name="theme-color" content="#060a12">
+<meta name="description" content="لوحة تحكم متجرك الإلكتروني">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="إدارة المتجر">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<style>
+/* ════════════════════════════════════════
+   VARIABLES & RESET
+════════════════════════════════════════ */
+:root {
+  --bg: #060a12;
+  --s1: #0d1320;
+  --s2: #131d2e;
+  --s3: #1a2540;
+  --p:  #e8195a;
+  --p2: #ff6b9d;
+  --pg: rgba(232,25,90,0.22);
+  --g:  #00d4aa;
+  --gd: rgba(0,212,170,0.12);
+  --a:  #ffd166;
+  --ad: rgba(255,209,102,0.12);
+  --b:  #4f8ef7;
+  --bd: rgba(79,142,247,0.12);
+  --pur:#8b5cf6;
+  --ora:#fb923c;
+  --red:#f43f5e;
+  --teal:#14b8a6;
+  --txt:#eef2ff;
+  --t2: #8899bb;
+  --t3: #4a5c7a;
+  --br: rgba(255,255,255,0.06);
+  --b2: rgba(255,255,255,0.10);
+  --r:  18px;
+  --r2: 14px;
+  --nh: 68px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;padding-bottom:calc(var(--nh)+28px);}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.6;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:4px;}
+
+/* ════ TOAST ════ */
+#tw{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;align-items:center;gap:8px;width:90%;max-width:360px;pointer-events:none;}
+.toast{width:100%;background:var(--s2);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:.88em;border:1px solid var(--b2);backdrop-filter:blur(20px);animation:tIn .35s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.toast.success{border-color:rgba(0,212,170,.4);}.toast.danger{border-color:rgba(232,25,90,.4);}.toast.warning{border-color:rgba(255,209,102,.4);}
+@keyframes tIn{from{opacity:0;transform:translateY(-16px) scale(.92);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes tOut{to{opacity:0;transform:translateY(-10px) scale(.95);}}
+
+/* ════ LOADER ════ */
+.lov{position:fixed;inset:0;background:rgba(6,10,18,.88);z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(10px);}
+.lov.on{display:flex;}
+.lring{width:50px;height:50px;border:3px solid rgba(255,255,255,.08);border-top:3px solid var(--p);border-radius:50%;animation:spin .75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ltxt{color:var(--t2);font-size:.88em;font-weight:600;}
+
+/* ════ AUTH ════ */
+#sa{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1000;background:var(--bg);padding:20px;}
+.acard{width:100%;max-width:400px;background:var(--s1);border:1px solid var(--b2);border-radius:28px;padding:32px 24px 28px;text-align:center;position:relative;overflow:hidden;}
+.acard::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,var(--pg) 0%,transparent 70%);pointer-events:none;}
+.alogo{width:72px;height:72px;background:linear-gradient(135deg,var(--p),var(--p2));border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 20px;box-shadow:0 12px 40px var(--pg);}
+.acard h2{font-size:1.5em;font-weight:900;margin-bottom:6px;background:linear-gradient(135deg,#fff,var(--p2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.acard p{color:var(--t2);font-size:.85em;margin-bottom:24px;}
+.albl{display:block;text-align:right;font-size:.78em;font-weight:700;color:var(--t2);margin-bottom:8px;letter-spacing:.5px;}
+.ainp{width:100%;background:var(--bg);border:1.5px solid var(--b2);color:var(--txt);padding:13px 14px;border-radius:14px;font-family:'Tajawal',monospace;font-size:.88em;resize:none;outline:none;transition:border-color .2s;margin-bottom:14px;}
+.ainp:focus{border-color:var(--p);box-shadow:0 0 0 3px var(--pg);}
+.abtn{width:100%;padding:15px;background:linear-gradient(135deg,var(--p),#c4154e);color:#fff;border:none;border-radius:16px;font-family:'Cairo',sans-serif;font-weight:800;font-size:1em;cursor:pointer;transition:.2s;box-shadow:0 8px 28px var(--pg);}
+.abtn:active{transform:scale(.97);}
+.ahint{margin-top:14px;font-size:.75em;color:var(--t3);}
+.install-btn{display:none;align-items:center;gap:8px;width:100%;padding:12px;background:var(--s2);border:1.5px solid rgba(79,142,247,.3);color:var(--b);border-radius:14px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.85em;cursor:pointer;margin-top:10px;justify-content:center;transition:.18s;}
+.install-btn:active{transform:scale(.97);}
+.install-btn .i-ico{font-size:1.2em;}
+
+/* ════ SCREENS ════ */
+#sm,#sg{display:none;position:relative;z-index:1;}
+
+/* ════ TOP BAR ════ */
+.tbar{position:sticky;top:0;z-index:200;background:rgba(6,10,18,.93);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--br);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.tbar-l{display:flex;align-items:center;gap:10px;}
+.tbar-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--p),var(--p2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.tbar-info h1{font-size:.95em;font-weight:900;color:var(--txt);}
+.trepo{font-size:.7em;font-weight:700;color:var(--p);background:var(--pg);border:1px solid rgba(232,25,90,.3);padding:2px 8px;border-radius:20px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tbar-r{display:flex;gap:8px;}
+.ibtn{width:36px;height:36px;background:var(--s2);border:1px solid var(--br);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:.9em;transition:.18s;}
+.ibtn:active{background:var(--s3);transform:scale(.94);}
+.ibtn.sort-on{background:var(--pg);border-color:var(--p);color:var(--p);}
+
+/* ════ STATS ════ */
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 14px 0;}
+.sbox{background:var(--s1);border:1px solid var(--br);border-radius:var(--r2);padding:14px 10px;text-align:center;position:relative;overflow:hidden;}
+.sbox::before{content:'';position:absolute;bottom:-10px;right:-10px;width:50px;height:50px;border-radius:50%;opacity:.15;}
+.sbox.p::before{background:var(--p);}.sbox.g::before{background:var(--g);}.sbox.a::before{background:var(--a);}
+.sval{font-size:1.8em;font-weight:900;line-height:1;}
+.sbox.p .sval{color:var(--p);}.sbox.g .sval{color:var(--g);}.sbox.a .sval{color:var(--a);}
+.slbl{font-size:.68em;color:var(--t2);margin-top:4px;font-weight:700;}
+
+/* ════ SEARCH + CHIPS ════ */
+.sw{padding:12px 14px 0;position:relative;}
+.sf{width:100%;background:var(--s1);border:1.5px solid var(--br);color:var(--txt);padding:12px 14px;border-radius:var(--r2);font-family:'Cairo',sans-serif;font-size:.9em;outline:none;transition:border-color .2s;}
+.sf:focus{border-color:var(--p);background:var(--s2);}
+.cbar{display:flex;gap:8px;padding:10px 14px 14px;overflow-x:auto;scrollbar-width:none;}
+.cbar::-webkit-scrollbar{display:none;}
+.chip{padding:7px 16px;border-radius:50px;background:var(--s1);border:1.5px solid var(--br);color:var(--t2);font-size:.8em;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s;font-family:'Cairo',sans-serif;}
+.chip:active{transform:scale(.95);}.chip.on{background:var(--pg);border-color:var(--p);color:var(--p);}
+
+/* ════ SORT MODE BANNER ════ */
+.sort-banner{display:none;background:linear-gradient(135deg,var(--pg),rgba(232,25,90,.1));border:1px solid rgba(232,25,90,.3);border-radius:14px;margin:0 14px 4px;padding:12px 16px;align-items:center;gap:10px;}
+.sort-banner.on{display:flex;}
+.sort-banner-txt{font-size:.83em;font-weight:700;color:var(--p2);flex:1;line-height:1.5;}
+.sort-save-btn{background:var(--p);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-family:'Cairo',sans-serif;font-weight:800;font-size:.82em;cursor:pointer;transition:.18s;white-space:nowrap;}
+.sort-save-btn:active{transform:scale(.95);}
+
+/* ════ SECTION HEAD ════ */
+.shead{display:flex;align-items:center;justify-content:space-between;padding:18px 14px 10px;}
+.shead-l{display:flex;align-items:center;gap:8px;}
+.shead-l h3{font-size:.95em;font-weight:900;}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sdot.normal{background:var(--b);box-shadow:0 0 6px var(--b);}
+.sdot.offer{background:var(--p);box-shadow:0 0 6px var(--p);}
+.ctag{font-size:.72em;font-weight:700;color:var(--t2);background:var(--s2);border:1px solid var(--br);padding:3px 10px;border-radius:20px;}
+
+/* ════ PRODUCT GRID ════ */
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 14px 4px;min-height:50px;transition:all .25s;}
+@media(min-width:560px){.pgrid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:800px){.pgrid{grid-template-columns:repeat(4,1fr);}}
+
+/* Sort mode: switch to list */
+.pgrid.list-mode{grid-template-columns:1fr !important;gap:8px;}
+
+/* ════ PRODUCT CARD ════ */
+.pcard{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);overflow:hidden;position:relative;transition:border-color .2s,box-shadow .2s;cursor:default;user-select:none;display:flex;flex-direction:column;}
+.pcard:hover{border-color:rgba(255,255,255,.12);box-shadow:0 4px 24px rgba(0,0,0,.4);}
+
+/* Normal grid mode */
+.pthumb{position:relative;aspect-ratio:1;overflow:hidden;background:var(--s2);}
+.pthumb img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;transition:transform .35s ease;}
+.pcard:hover .pthumb img{transform:scale(1.05);}
+.pbadge{position:absolute;top:8px;right:8px;background:var(--p);color:#fff;font-size:.68em;font-weight:800;padding:3px 8px;border-radius:20px;max-width:75px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:0 2px 8px var(--pg);}
+.pdrag{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(255,255,255,.65);cursor:grab;border:1px solid rgba(255,255,255,.1);transition:.2s;}
+.pdrag:active{cursor:grabbing;background:rgba(232,25,90,.5);}
+.pbody{padding:10px 10px 4px;flex:1;pointer-events:none;}
+.ptype{font-size:.68em;color:var(--t3);margin-bottom:3px;font-weight:600;}
+.pname{font-weight:800;font-size:.88em;line-height:1.3;color:var(--txt);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px;}
+.pprices{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.pnow{font-size:.95em;font-weight:900;color:var(--a);}
+.pold{font-size:.75em;color:var(--t3);text-decoration:line-through;}
+.pacts{display:flex;gap:6px;padding:8px 10px 10px;}
+.pab{flex:1;padding:8px 6px;border-radius:10px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.76em;border:none;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:4px;}
+.pab:active{transform:scale(.95);}
+.pab.ed{background:var(--ad);color:var(--a);border:1px solid rgba(255,209,102,.2);}
+.pab.dl{background:rgba(232,25,90,.1);color:var(--p);border:1px solid rgba(232,25,90,.2);}
+
+/* LIST MODE card override */
+.pgrid.list-mode .pcard{flex-direction:row;align-items:center;border-radius:14px;min-height:72px;}
+.pgrid.list-mode .pthumb{width:68px;height:68px;aspect-ratio:unset;flex-shrink:0;border-radius:12px 0 0 12px;}
+.pgrid.list-mode .pbody{padding:8px 10px;flex:1;pointer-events:all;}
+.pgrid.list-mode .pname{-webkit-line-clamp:1;}
+.pgrid.list-mode .pacts{padding:8px 8px 8px 0;flex-direction:column;gap:5px;width:76px;flex-shrink:0;}
+.pgrid.list-mode .pab{padding:7px 4px;font-size:.72em;}
+/* Big drag handle in list mode */
+.pgrid.list-mode .pdrag{position:relative;top:auto;left:auto;width:100%;height:100%;border-radius:0;background:transparent;border:none;backdrop-filter:none;font-size:20px;color:var(--t3);border-left:1px solid var(--br);width:36px;flex-shrink:0;order:-1;align-self:stretch;display:flex;align-items:center;justify-content:center;}
+.pgrid.list-mode .pbadge{top:6px;right:74px;}
+
+/* Sortable states */
+.sortable-ghost{opacity:.2;border:2px dashed var(--p);background:var(--pg);}
+.sortable-drag{box-shadow:0 20px 50px rgba(0,0,0,.7) !important;cursor:grabbing !important;}
+
+/* Empty */
+.empty{grid-column:1/-1;text-align:center;padding:28px 16px;color:var(--t3);}
+.empty-ico{font-size:2.2em;margin-bottom:8px;}
+.empty p{font-size:.84em;}
+
+/* Divider */
+.dvd{height:10px;background:var(--bg);margin:6px 0;}
+
+/* ════ BOTTOM NAV ════ */
+.bnav{position:fixed;bottom:0;left:0;right:0;height:var(--nh);background:rgba(13,19,32,.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--br);display:none;justify-content:space-around;align-items:center;z-index:300;padding:0 8px;}
+.ntab{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--t3);font-size:.6em;font-weight:700;cursor:pointer;padding:7px 12px;border-radius:14px;transition:.2s;border:none;background:none;font-family:'Cairo',sans-serif;}
+.ntab .ni{font-size:1.55em;line-height:1;transition:transform .2s;}
+.ntab.on{color:var(--p);}
+.ntab.on .ni{transform:translateY(-3px);}
+.ntab:active{background:var(--s1);}
+
+/* ════ FAB ════ */
+.fab{position:fixed;bottom:calc(var(--nh)+14px);left:50%;transform:translateX(-50%);z-index:250;display:none;align-items:center;gap:8px;background:linear-gradient(135deg,var(--p),#b71145);color:#fff;border:none;border-radius:50px;padding:14px 26px;font-family:'Cairo',sans-serif;font-weight:800;font-size:.92em;cursor:pointer;box-shadow:0 8px 32px var(--pg);transition:.2s;}
+.fab:active{transform:translateX(-50%) scale(.96);}
+
+/* ════ SHEET ════ */
+.shovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+.shovl.on{display:flex;}
+.sheet{background:var(--s1);border-radius:26px 26px 0 0;width:100%;max-width:640px;max-height:93vh;overflow-y:auto;border:1px solid var(--b2);border-bottom:none;animation:shUp .32s cubic-bezier(.34,1.1,.64,1);}
+@keyframes shUp{from{transform:translateY(100%);opacity:.5;}to{transform:translateY(0);opacity:1;}}
+.shhw{padding:12px 0 4px;text-align:center;cursor:pointer;}
+.shh{width:38px;height:4px;background:var(--s3);border-radius:4px;display:inline-block;}
+.shhd{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 16px;border-bottom:1px solid var(--br);}
+.shttl{font-size:1.05em;font-weight:900;}
+.shx{width:34px;height:34px;background:var(--s2);border:1px solid var(--br);border-radius:50%;color:var(--t2);font-size:1.1em;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.18s;}
+.shx:active{background:var(--s3);transform:scale(.92);}
+.shb{padding:18px 20px 28px;}
+
+/* Form */
+.flbl{display:block;font-size:.76em;font-weight:700;color:var(--t2);margin-bottom:6px;letter-spacing:.3px;}
+.flbl span{color:var(--p);}
+.finp,.fsel,.ftxt{width:100%;background:var(--bg);border:1.5px solid var(--b2);color:var(--txt);padding:12px 14px;border-radius:13px;font-family:'Cairo',sans-serif;font-size:.9em;outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:14px;-webkit-appearance:none;}
+.finp:focus,.fsel:focus,.ftxt:focus{border-color:var(--p);box-shadow:0 0 0 3px var(--pg);background:var(--s1);}
+.ftxt{resize:none;}
+.frow{display:flex;gap:12px;}
+.frow>.fcol{flex:1;}
+
+/* Upload */
+.upz{border:2px dashed var(--b2);border-radius:var(--r2);padding:20px;text-align:center;cursor:pointer;transition:.2s;margin-bottom:14px;position:relative;}
+.upz:hover,.upz.drag-on{border-color:var(--p);background:var(--pg);}
+.upz p{font-size:.84em;color:var(--t2);margin-top:6px;}
+.upz .uico{font-size:2em;margin-bottom:4px;}
+#iprev{max-height:130px;display:none;margin:10px auto 0;border-radius:12px;max-width:100%;}
+#upst{font-size:.8em;font-weight:700;display:block;margin-top:8px;}
+
+/* Save btn */
+.bsave{width:100%;padding:15px;background:linear-gradient(135deg,var(--p),#b71145);color:#fff;border:none;border-radius:16px;font-family:'Cairo',sans-serif;font-weight:800;font-size:1em;cursor:pointer;transition:.2s;box-shadow:0 6px 24px var(--pg);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.bsave:active{transform:scale(.97);}
+
+/* Confirm */
+.covl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:600;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);}
+.covl.on{display:flex;}
+.cbox{background:var(--s1);border-radius:26px 26px 0 0;width:100%;max-width:480px;padding:24px 20px 36px;border:1px solid var(--b2);border-bottom:none;text-align:center;animation:shUp .28s cubic-bezier(.34,1.1,.64,1);}
+.cico{font-size:2.8em;margin-bottom:12px;}
+.cbox h3{font-size:1.1em;font-weight:900;margin-bottom:8px;}
+.cbox p{color:var(--t2);font-size:.86em;margin-bottom:22px;line-height:1.6;}
+.cbtns{display:flex;gap:12px;}
+.cb{flex:1;padding:13px;border-radius:14px;font-family:'Cairo',sans-serif;font-weight:800;font-size:.92em;cursor:pointer;border:none;transition:.18s;}
+.cb:active{transform:scale(.96);}
+.cb.cn{background:var(--s2);color:var(--t2);border:1px solid var(--br);}
+.cb.cd{background:rgba(232,25,90,.15);color:var(--p);border:1px solid rgba(232,25,90,.3);}
+
+/* ════════════════════════════════════════
+   GROWTH PLAN SCREEN
+════════════════════════════════════════ */
+#sg{padding-bottom:calc(var(--nh)+28px);}
+
+/* BG effects for growth section */
+.gbg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(240,180,41,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(240,180,41,.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;}
+.gbg-orb1{position:fixed;top:-180px;right:-180px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(240,180,41,.07) 0%,transparent 65%);pointer-events:none;z-index:0;}
+.gbg-orb2{position:fixed;bottom:-180px;left:-180px;width:440px;height:440px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.06) 0%,transparent 65%);pointer-events:none;z-index:0;}
+
+.gc{max-width:860px;margin:0 auto;padding:0 14px;position:relative;z-index:1;}
+
+/* Growth header */
+.ghdr{padding:20px 0 18px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:20px;}
+.ghdr-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.glogo{display:flex;align-items:center;gap:10px;}
+.glogo-ico{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#f0b429,#e8863a);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 24px rgba(240,180,41,.3);}
+.glogo-txt h2{font-family:'Tajawal',sans-serif;font-size:17px;font-weight:900;}
+.glogo-txt span{font-size:11px;color:var(--t3);}
+.gcontrols{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.gcyc{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;background:rgba(240,180,41,.12);border:1px solid rgba(240,180,41,.25);font-size:12px;color:#f0b429;font-weight:600;white-space:nowrap;}
+.gwsel{display:flex;align-items:center;gap:8px;background:var(--s1);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:8px 12px;font-size:13px;color:var(--t2);}
+.gwsel select{background:transparent;border:none;color:var(--txt);font-family:'Cairo',sans-serif;font-size:13px;cursor:pointer;outline:none;max-width:190px;}
+.gwsel select option{background:var(--s2);}
+
+/* Stats */
+.gpov{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px;}
+.gsc{background:var(--s1);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;position:relative;overflow:hidden;transition:border-color .25s;}
+.gsc:hover{border-color:rgba(240,180,41,.3);}
+.gsc::before{content:'';position:absolute;top:0;right:0;width:50px;height:50px;border-radius:0 14px 0 50px;background:rgba(240,180,41,.1);}
+.gsn{font-family:'Tajawal',sans-serif;font-size:28px;font-weight:900;background:linear-gradient(135deg,#f0b429,#e8863a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;}
+.gsl{font-size:11px;color:var(--t3);margin-top:4px;}
+.gss{font-size:10px;color:var(--t3);margin-top:5px;}
+.gring{background:var(--s1);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;grid-column:span 2;transition:border-color .25s;}
+.gring:hover{border-color:rgba(240,180,41,.3);}
+.grw{position:relative;flex-shrink:0;}
+.grw svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:6;}
+.ring-fill{fill:none;stroke:url(#rg);stroke-width:6;stroke-linecap:round;stroke-dasharray:220;stroke-dashoffset:220;transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1);}
+.grc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.grp{font-family:'Tajawal',sans-serif;font-size:18px;font-weight:900;background:linear-gradient(135deg,#f0b429,#e8863a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gri{flex:1;min-width:0;}
+.gri h3{font-size:14px;font-weight:700;margin-bottom:5px;}
+.gri p{font-size:11px;color:var(--t3);line-height:1.6;}
+.gpbw{margin-top:10px;}
+.gpbt{height:5px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;}
+.gpbf{height:100%;border-radius:99px;background:linear-gradient(90deg,#e8863a,#f0b429);transition:width 1s cubic-bezier(.4,0,.2,1);width:0%;}
+.gpbl{display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:5px;}
+
+/* Streak */
+.gstr{display:flex;gap:5px;margin-bottom:20px;}
+.gsd{flex:1;background:var(--s1);border:1px solid rgba(255,255,255,.06);border-radius:9px;padding:9px 3px;text-align:center;font-size:9px;color:var(--t3);cursor:pointer;transition:all .25s;min-width:0;}
+.gsd .dn{font-weight:600;margin-bottom:4px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gsd .dd{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.06);margin:0 auto;transition:all .25s;}
+.gsd.active{border-color:#10b981;background:rgba(16,185,129,.1);}
+.gsd.active .dd{background:#10b981;box-shadow:0 0 7px rgba(16,185,129,.5);}
+.gsd.today{border-color:rgba(240,180,41,.3);}
+.gsd.today .dn{color:#f0b429;}
+
+/* Motivation */
+.gmot{border-radius:14px;padding:16px 18px;background:var(--s1);border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px;margin-bottom:18px;overflow:hidden;position:relative;}
+.gmot::before{content:'';position:absolute;top:0;right:0;bottom:0;width:3px;background:linear-gradient(180deg,#f0b429,#e8863a);border-radius:0 14px 14px 0;}
+.gmot-ico{font-size:22px;flex-shrink:0;}
+.gmot-q{font-size:12px;color:var(--t2);line-height:1.7;}
+.gmot-q strong{color:#f0b429;font-size:13px;}
+
+/* Week complete / cycle complete */
+.gwc{display:none;background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(16,185,129,.06));border:1px solid rgba(16,185,129,.3);border-radius:14px;padding:18px;text-align:center;margin-bottom:18px;animation:fadeUp .5s ease;}
+.gwc.show{display:block;}
+.gwc h3{font-size:17px;font-weight:800;color:#10b981;margin-bottom:6px;}
+.gwc p{font-size:12px;color:var(--t2);line-height:1.7;}
+.gcc{display:none;background:linear-gradient(135deg,rgba(240,180,41,.1),rgba(232,134,58,.07));border:2px solid rgba(240,180,41,.25);border-radius:18px;padding:26px 18px;text-align:center;margin:20px 0;animation:fadeUp .5s ease;position:relative;overflow:hidden;}
+.gcc::before{content:'';position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#f0b429,transparent);}
+.gcc.show{display:block;}
+.gcc-ico{font-size:44px;margin-bottom:10px;}
+.gcc h3{font-size:19px;font-weight:900;color:#f0b429;margin-bottom:8px;font-family:'Tajawal',sans-serif;}
+.gcc p{font-size:12px;color:var(--t2);line-height:1.8;max-width:360px;margin:0 auto 16px;}
+
+/* Sections */
+.gsecs{display:flex;flex-direction:column;gap:12px;}
+.gsec{background:var(--s1);border:1px solid rgba(255,255,255,.06);border-radius:18px;overflow:hidden;animation:fadeUp .5s ease both;transition:border-color .25s;}
+.gsec:hover{border-color:rgba(255,255,255,.1);}
+.gseh{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);transition:background .2s;user-select:none;gap:10px;}
+.gseh:hover{background:var(--s2);}
+.gseh:active{background:var(--s3);}
+.gset{display:flex;align-items:center;gap:10px;min-width:0;}
+.gsei{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.gsen{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gsed{font-size:10px;color:var(--t3);margin-top:1px;}
+.gsem{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.gseb{padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;}
+.gsec-chevron{color:var(--t3);font-size:13px;transition:transform .3s;display:inline-block;}
+.gsec.collapsed .gsec-chevron{transform:rotate(-90deg);}
+.gsecb{padding:6px 0;}
+.gsec.collapsed .gsecb{display:none;}
+
+/* Tasks */
+.gtask{display:flex;align-items:flex-start;gap:10px;padding:12px 18px;transition:background .2s;cursor:pointer;position:relative;}
+.gtask:hover{background:var(--s2);}
+.gtask:active{background:var(--s3);}
+.gtask.done{opacity:.55;}
+.gtask.done .gtn{text-decoration:line-through;color:var(--t3);}
+.gtcheck{width:19px;height:19px;border-radius:6px;flex-shrink:0;border:2px solid rgba(255,255,255,.12);margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .2s;background:transparent;}
+.gtask.done .gtcheck{background:#10b981;border-color:#10b981;box-shadow:0 0 8px rgba(16,185,129,.4);}
+.gtcheck::after{content:'✓';color:white;font-size:10px;font-weight:800;opacity:0;transition:opacity .2s;}
+.gtask.done .gtcheck::after{opacity:1;}
+.gtcont{flex:1;min-width:0;}
+.gtn{font-size:12px;font-weight:600;margin-bottom:3px;line-height:1.5;}
+.gtd{font-size:10px;color:var(--t3);line-height:1.65;}
+.gtr{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.gtday{font-size:9px;color:var(--t3);background:var(--s2);border:1px solid rgba(255,255,255,.06);border-radius:5px;padding:2px 6px;font-weight:500;white-space:nowrap;}
+.gtpri{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.pri-high{background:#f43f5e;box-shadow:0 0 5px rgba(244,63,94,.5);}
+.pri-med{background:#f0b429;box-shadow:0 0 5px rgba(240,180,41,.5);}
+.pri-low{background:#3b82f6;box-shadow:0 0 5px rgba(59,130,246,.4);}
+.gtdiv{height:1px;background:rgba(255,255,255,.04);margin:0 18px;}
+
+/* Tip box */
+.gtip{background:linear-gradient(135deg,rgba(240,180,41,.06),rgba(232,134,58,.04));border:1px solid rgba(240,180,41,.15);border-radius:9px;padding:11px 14px;margin:8px 18px 6px;display:flex;gap:9px;align-items:flex-start;}
+.gtip .tico{font-size:15px;flex-shrink:0;margin-top:1px;}
+.gtip p{font-size:10.5px;color:var(--t2);line-height:1.7;}
+.gtip p strong{color:#f0b429;}
+
+/* Growth footer */
+.gfoot{display:flex;align-items:center;justify-content:space-between;padding:20px 0 10px;gap:12px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.06);margin-top:20px;}
+.gfoot-l{font-size:11px;color:var(--t3);}
+.gfoot-l strong{color:var(--t2);}
+.gbtngrp{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* Btns */
+.gbtn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:9px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .22s;white-space:nowrap;}
+.gbtn:active{transform:scale(.97);}
+.gbtn-ghost{background:var(--s1);border:1px solid rgba(255,255,255,.08);color:var(--t2);}
+.gbtn-ghost:hover{border-color:#f0b429;color:#f0b429;}
+.gbtn-next{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 18px rgba(16,185,129,.25);}
+.gbtn-restart{background:linear-gradient(135deg,#f0b429,#e8863a);color:#080a0f;box-shadow:0 4px 18px rgba(240,180,41,.25);}
+
+/* Growth toast */
+#gtst{position:fixed;bottom:calc(var(--nh)+16px);left:50%;transform:translateX(-50%) translateY(80px);background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:11px 18px;font-size:12px;color:var(--txt);z-index:999;box-shadow:0 4px 24px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;max-width:calc(100vw - 32px);text-align:center;}
+#gtst.show{transform:translateX(-50%) translateY(0);}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* Desktop */
+@media(min-width:768px){
+  body{padding-bottom:28px;}
+  .fab{bottom:24px;}
+  .bnav{display:none !important;}
+  .sheet{border-radius:26px;margin:auto;}
+  .shovl{align-items:center;}
+  .cbox{border-radius:26px;margin:auto;}
+  .covl{align-items:center;}
+  .gstr{gap:8px;}
+  .gsd{font-size:11px;}
+  .gfoot{flex-wrap:nowrap;}
+}
+@media(max-width:600px){
+  .gring{grid-column:span 1;flex-direction:column;text-align:center;}
+  .grw{margin:0 auto;}
+  .gpov{grid-template-columns:repeat(2,1fr);}
+  .gtask{padding:11px 14px;gap:9px;}
+  .gseh{padding:13px 15px;}
+  .gtip{margin:7px 14px 5px;}
+  .gfoot{flex-direction:column;align-items:flex-start;}
+  .gbtngrp{width:100%;}
+  .gbtngrp .gbtn{flex:1;justify-content:center;}
+  .gtday{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div id="tw"></div>
+
+<div id="ldr" class="lov">
+  <div class="lring"></div>
+  <p class="ltxt" id="ltxt">جاري المعالجة...</p>
+</div>
+
+<!-- AUTH -->
+<div id="sa">
+  <div class="acard">
+    <div class="alogo">🏪</div>
+    <h2>لوحة إدارة المتجر</h2>
+    <p>أدخل مفتاح الربط للوصول إلى لوحة التحكم</p>
+    <label class="albl">مفتاح الربط (Access Key)</label>
+    <textarea id="akey" class="ainp" rows="3" placeholder="الصق مفتاح الربط الخاص بمتجرك..."></textarea>
+    <button class="abtn" onclick="doConnect()">🚀 دخول للوحة التحكم</button>
+    <button class="install-btn" id="install-btn" onclick="installApp()"><span class="i-ico">📲</span> تثبيت التطبيق على جهازك</button>
+    <p class="ahint">🔐 يُحفظ المفتاح بشكل آمن على جهازك</p>
+  </div>
+</div>
+
+<!-- PRODUCTS SCREEN -->
+<div id="sm">
+  <div class="tbar">
+    <div class="tbar-l">
+      <div class="tbar-logo">🏪</div>
+      <div class="tbar-info">
+        <h1>إدارة المتجر</h1>
+        <div class="trepo" id="rname" style="display:none">—</div>
+      </div>
+    </div>
+    <div class="tbar-r">
+      <button class="ibtn" id="sort-btn" onclick="toggleSortMode()" title="وضع الترتيب">⠿</button>
+      <button class="ibtn" onclick="doRefresh()" title="تحديث">🔄</button>
+      <button class="ibtn" onclick="doLogout()" title="خروج">🚪</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="srow">
+    <div class="sbox p"><div class="sval" id="st-all">0</div><div class="slbl">إجمالي</div></div>
+    <div class="sbox g"><div class="sval" id="st-n">0</div><div class="slbl">رئيسي</div></div>
+    <div class="sbox a"><div class="sval" id="st-o">0</div><div class="slbl">عروض</div></div>
+  </div>
+
+  <!-- Sort Banner -->
+  <div class="sort-banner" id="sort-banner">
+    <span style="font-size:1.2em">⠿</span>
+    <span class="sort-banner-txt">وضع الترتيب — اسحب المنتجات لإعادة ترتيبها</span>
+    <button class="sort-save-btn" onclick="saveOrder()">💾 حفظ الترتيب</button>
+  </div>
+
+  <!-- Search -->
+  <div class="sw" style="margin-top:12px;">
+    <input type="search" class="sf" id="sinp" placeholder="🔍 ابحث عن منتج..." oninput="renderAll()">
+  </div>
+
+  <!-- Chips -->
+  <div class="cbar">
+    <button class="chip on" onclick="setFilter('all',this)">✦ الكل</button>
+    <button class="chip" onclick="setFilter('normal',this)">📂 رئيسي</button>
+    <button class="chip" onclick="setFilter('offer',this)">🔥 عروض</button>
+  </div>
+
+  <!-- Normal -->
+  <div id="sec-n">
+    <div class="shead">
+      <div class="shead-l"><div class="sdot normal"></div><h3>القسم الرئيسي</h3></div>
+      <span class="ctag" id="cnt-n">0</span>
+    </div>
+    <div class="pgrid" id="gn"></div>
+  </div>
+
+  <div class="dvd"></div>
+
+  <!-- Offers -->
+  <div id="sec-o">
+    <div class="shead">
+      <div class="shead-l"><div class="sdot offer"></div><h3>قسم العروض 🔥</h3></div>
+      <span class="ctag" id="cnt-o">0</span>
+    </div>
+    <div class="pgrid" id="go"></div>
+  </div>
+
+  <div style="height:12px"></div>
+</div>
+
+<!-- GROWTH SCREEN -->
+<div id="sg">
+  <div class="gbg-grid"></div>
+  <div class="gbg-orb1"></div>
+  <div class="gbg-orb2"></div>
+  <div class="gc">
+
+    <!-- Header -->
+    <div class="ghdr">
+      <div class="ghdr-top">
+        <div class="glogo">
+          <div class="glogo-ico">📈</div>
+          <div class="glogo-txt">
+            <h2>خطة النمو الأسبوعية</h2>
+            <span>للمتاجر الجديدة والقديمة — بدون إعلانات مدفوعة</span>
+          </div>
+        </div>
+      </div>
+      <div class="gcontrols">
+        <div class="gcyc" id="gcyc">🔁 الدورة #1</div>
+        <div class="gwsel">📅 <select id="gwk" onchange="gChangeWeek(this.value)">
+          <option value="1">الأسبوع الأول — التقييم والتأسيس</option>
+          <option value="2">الأسبوع الثاني — بناء الزخم</option>
+          <option value="3">الأسبوع الثالث — التسريع والشراكات</option>
+          <option value="4">الأسبوع الرابع — الأنظمة والاستدامة</option>
+        </select></div>
+      </div>
+    </div>
+
+    <!-- Motivation -->
+    <div class="gmot"><div class="gmot-ico">💡</div><div><div class="gmot-q"></div></div></div>
+
+    <!-- Streak -->
+    <div class="gstr" id="gstr">
+      <div class="gsd" data-day="0"><span class="dn">الأحد</span><div class="dd"></div></div>
+      <div class="gsd" data-day="1"><span class="dn">الاثنين</span><div class="dd"></div></div>
+      <div class="gsd" data-day="2"><span class="dn">الثلاثاء</span><div class="dd"></div></div>
+      <div class="gsd" data-day="3"><span class="dn">الأربعاء</span><div class="dd"></div></div>
+      <div class="gsd" data-day="4"><span class="dn">الخميس</span><div class="dd"></div></div>
+      <div class="gsd" data-day="5"><span class="dn">الجمعة</span><div class="dd"></div></div>
+      <div class="gsd" data-day="6"><span class="dn">السبت</span><div class="dd"></div></div>
+    </div>
+
+    <!-- Progress -->
+    <div class="gpov">
+      <div class="gsc"><div class="gsn" id="gdone">0</div><div class="gsl">مهمة منجزة</div><div class="gss">من <span id="gtotal">0</span> مهمة</div></div>
+      <div class="gsc"><div class="gsn" id="gstreak">0</div><div class="gsl">أيام نشاط</div><div class="gss">استمر 🔥</div></div>
+      <div class="gring">
+        <div class="grw">
+          <svg width="80" height="80" viewBox="0 0 90 90">
+            <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#e8863a"/><stop offset="100%" style="stop-color:#f0b429"/></linearGradient></defs>
+            <circle class="ring-bg" cx="45" cy="45" r="35"/>
+            <circle class="ring-fill" id="rfill" cx="45" cy="45" r="35"/>
+          </svg>
+          <div class="grc"><div class="grp" id="gpct">0%</div></div>
+        </div>
+        <div class="gri">
+          <h3>إنجاز الأسبوع</h3>
+          <p>كل مهمة تنجزها تبني زخماً حقيقياً في متجرك.</p>
+          <div class="gpbw">
+            <div class="gpbl"><span>التقدم</span><span id="gpbl">0%</span></div>
+            <div class="gpbt"><div class="gpbf" id="gpbar"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Week complete -->
+    <div class="gwc" id="gwc">
+      <div style="font-size:30px;margin-bottom:8px">🎉</div>
+      <h3>أتممت أسبوعك! رائع 🔥</h3>
+      <p id="gwcmsg">انتقل للأسبوع التالي وواصل الزخم.</p>
+      <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="gbtn gbtn-next" id="gnxtbtn" onclick="gNextWeek()">الأسبوع التالي ←</button>
+      </div>
+    </div>
+    <div class="gcc" id="gcc">
+      <div class="gcc-ico">🏆</div>
+      <h3>أتممت الدورة كاملة!</h3>
+      <p>أحسنت! لقد أكملت ٤ أسابيع متواصلة. ابدأ دورة جديدة بمستوى أعلى.</p>
+      <button class="gbtn gbtn-restart" onclick="gRestartCycle()">🔁 ابدأ دورة جديدة</button>
+    </div>
+
+    <!-- Sections container -->
+    <div class="gsecs" id="gsecs"></div>
+
+    <!-- Footer -->
+    <div class="gfoot">
+      <div class="gfoot-l">آخر تحديث: <strong id="glupd">—</strong></div>
+      <div class="gbtngrp">
+        <button class="gbtn gbtn-ghost" onclick="gResetWeek()">🔄 إعادة الأسبوع</button>
+      </div>
+    </div>
+  </div>
+</div><!-- end #sg -->
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openModal()"><span style="font-size:1.2em">＋</span> منتج جديد</button>
+
+<!-- Bottom Nav -->
+<nav class="bnav" id="bnav">
+  <button class="ntab on" onclick="showScreen('products')" id="tab-p"><span class="ni">🏠</span>الرئيسية</button>
+  <button class="ntab" onclick="openModal()"><span class="ni">➕</span>إضافة</button>
+  <button class="ntab" onclick="goOffers()"><span class="ni">🔥</span>العروض</button>
+  <button class="ntab" onclick="showScreen('growth')" id="tab-g"><span class="ni">📈</span>النمو</button>
+</nav>
+
+<!-- Product Modal -->
+<div id="mov" class="shovl" onclick="handleMOvl(event)">
+  <div class="sheet" id="msheet">
+    <div class="shhw" onclick="closeModal()"><span class="shh"></span></div>
+    <div class="shhd"><span class="shttl" id="mttl">إضافة منتج</span><button class="shx" onclick="closeModal()">✕</button></div>
+    <div class="shb">
+      <input type="hidden" id="fid">
+      <label class="flbl">📸 صورة المنتج</label>
+      <div class="upz" id="upz" onclick="document.getElementById('ffile').click()">
+        <input type="file" id="ffile" hidden accept="image/*" onchange="handleFile(this)">
+        <div class="uico">🖼️</div>
+        <p>اضغط لرفع صورة أو اسحبها هنا</p>
+        <p style="font-size:.76em;margin-top:2px;">سيتم ضغطها تلقائياً بصيغة WebP بجودة 80%</p>
+        <img id="iprev" src="" alt="معاينة">
+        <input type="hidden" id="fimg">
+        <small id="upst"></small>
+      </div>
+      <label class="flbl">اسم المنتج <span>*</span></label>
+      <input type="text" class="finp" id="fname" placeholder="أدخل اسم المنتج">
+      <div class="frow">
+        <div class="fcol"><label class="flbl">السعر الحالي <span>*</span></label><input type="text" class="finp" id="fprice" placeholder="مثلاً: 2500"></div>
+        <div class="fcol"><label class="flbl">السعر القديم</label><input type="text" class="finp" id="fold" placeholder="لإظهار الخصم"></div>
+      </div>
+      <div class="frow">
+        <div class="fcol"><label class="flbl">مكان العرض</label><select class="fsel" id="ftype"><option value="normal">📂 القائمة الرئيسية</option><option value="offer">🔥 قسم العروض</option></select></div>
+        <div class="fcol"><label class="flbl">الفئة</label><input type="text" class="finp" id="fcat" placeholder="مثلاً: مستحضرات"></div>
+      </div>
+      <label class="flbl">نص الشارة (اختياري)</label>
+      <input type="text" class="finp" id="fbadge" placeholder="مثلاً: وصل حديثاً">
+      <label class="flbl">وصف المنتج</label>
+      <textarea class="ftxt" id="fdesc" rows="3" placeholder="تفاصيل المنتج..."></textarea>
+      <button class="bsave" onclick="saveProduct()">💾 حفظ ونشر التغييرات</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm -->
+<div id="cov" class="covl" onclick="handleCOvl(event)">
+  <div class="cbox">
+    <div class="cico">🗑️</div>
+    <h3>حذف المنتج</h3>
+    <p>هل أنت متأكد من حذف هذا المنتج؟<br>لا يمكن التراجع عن هذا الإجراء.</p>
+    <div class="cbtns">
+      <button class="cb cn" onclick="closeConfirm()">إلغاء</button>
+      <button class="cb cd" id="cdelb">حذف نهائياً</button>
+    </div>
+  </div>
+</div>
+
+<!-- Growth toast -->
+<div id="gtst"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  PRODUCTS STATE
+// ══════════════════════════════════════════
+let GH={}, prods=[], sha='', sortN, sortO;
+let filt='all', sortMode=false, delId=null;
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+// ══════════════════════════════════════════
+//  SERVICE WORKER + INSTALL PROMPT
+// ══════════════════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  const btn=document.getElementById('install-btn');
+  if(btn)btn.style.display='flex';
+});
+window.addEventListener('appinstalled',()=>{
+  deferredPrompt=null;
+  const btn=document.getElementById('install-btn');
+  if(btn)btn.style.display='none';
+  toast('✅ تم تثبيت التطبيق على جهازك','success');
+});
+function installApp(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{deferredPrompt=null;});
+}
+
+window.onload=()=>{
+  const saved=localStorage.getItem('mph_k');
+  if(saved){document.getElementById('akey').value=saved;doConnect();}
+  // swipe to close modal
+  let sy=0; const ms=document.getElementById('msheet');
+  ms.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});
+  ms.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-sy>90&&ms.scrollTop===0)closeModal();});
+  // init growth plan
+  gInit();
+};
+
+// ══════════════════════════════════════════
+//  SCREEN SWITCHING
+// ══════════════════════════════════════════
+let curScreen='products';
+function showScreen(s){
+  curScreen=s;
+  document.getElementById('sm').style.display=s==='products'?'block':'none';
+  document.getElementById('sg').style.display=s==='growth'?'block':'none';
+  document.getElementById('fab').style.display=s==='products'?'flex':'none';
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));
+  document.getElementById(s==='products'?'tab-p':'tab-g').classList.add('on');
+}
+
+// ══════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════
+async function doConnect(){
+  const raw=document.getElementById('akey').value.trim();
+  if(!raw)return toast('أدخل مفتاح الربط','warning');
+  try{
+    const creds=JSON.parse(decodeURIComponent(escape(atob(raw))));
+    if(!creds.u||!creds.r||!creds.t)throw 0;
+    GH={user:creds.u,repo:creds.r,token:creds.t,path:'products.json'};
+    loader(true,'جاري الاتصال بالمتجر...');
+    await loadProds();
+    localStorage.setItem('mph_k',raw);
+    document.getElementById('sa').style.display='none';
+    showScreen('products');
+    document.getElementById('bnav').style.display='flex';
+  }catch{
+    toast('❌ المفتاح غير صحيح أو تالف','danger');
+    localStorage.removeItem('mph_k');
+    loader(false);
+  }
+}
+function doLogout(){localStorage.removeItem('mph_k');location.reload();}
+async function doRefresh(){loader(true,'جاري تحديث المنتجات...');await loadProds();toast('✅ تم التحديث','success');}
+
+// ══════════════════════════════════════════
+//  GITHUB
+// ══════════════════════════════════════════
+async function loadProds(){
+  const url=`https://api.github.com/repos/${GH.user}/${GH.repo}/contents/${GH.path}`;
+  const r=await fetch(url,{headers:ghH()});
+  if(r.status===404){prods=[];sha='';}
+  else if(r.ok){const d=await r.json();sha=d.sha;const parsed=JSON.parse(decodeURIComponent(escape(atob(d.content))));prods=Array.isArray(parsed)?parsed:(parsed.items||[]);}
+  else throw new Error();
+  document.getElementById('rname').textContent=GH.repo;
+  document.getElementById('rname').style.display='block';
+  loader(false);renderAll();
+}
+
+async function purgeJsDelivr(){
+  try{await fetch(`https://purge.jsdelivr.net/gh/${GH.user}/${GH.repo}@main/${GH.path}`);}catch{}
+}
+
+async function pushToGH(msg='✅ تم الحفظ'){
+  loader(true,'جاري حفظ التغييرات...');
+  const payload={_v:Date.now(),items:prods};
+  const b64=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
+  const url=`https://api.github.com/repos/${GH.user}/${GH.repo}/contents/${GH.path}`;
+  try{
+    const r=await fetch(url,{method:'PUT',headers:ghH(),body:JSON.stringify({message:'Update products',content:b64,sha})});
+    if(r.ok){const d=await r.json();sha=d.content.sha;renderAll();toast(msg,'success');purgeJsDelivr();}
+    else toast('❌ خطأ أثناء الحفظ','danger');
+  }catch{toast('❌ تعذّر الاتصال','danger');}
+  loader(false);
+}
+
+function ghH(){return{'Authorization':`token ${GH.token}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'};}
+
+// ══════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════
+function renderAll(){
+  const q=document.getElementById('sinp').value.toLowerCase().trim();
+  const gn=document.getElementById('gn'),go=document.getElementById('go');
+  gn.innerHTML='';go.innerHTML='';
+  // apply list mode class
+  [gn,go].forEach(g=>{if(sortMode)g.classList.add('list-mode');else g.classList.remove('list-mode');});
+  const vis=prods.filter(p=>{
+    const mq=!q||p.name.toLowerCase().includes(q);
+    const mf=filt==='all'||(filt==='normal'&&!p.is_offer)||(filt==='offer'&&p.is_offer);
+    return mq&&mf;
+  });
+  let nc=0,oc=0;
+  vis.forEach(p=>{
+    const c=buildCard(p);
+    if(p.is_offer){go.insertAdjacentHTML('beforeend',c);oc++;}
+    else{gn.insertAdjacentHTML('beforeend',c);nc++;}
+  });
+  if(!nc)gn.innerHTML=`<div class="empty"><div class="empty-ico">📭</div><p>لا توجد منتجات رئيسية</p></div>`;
+  if(!oc)go.innerHTML=`<div class="empty"><div class="empty-ico">🎁</div><p>لا توجد عروض حالياً</p></div>`;
+  const t=prods.length,n=prods.filter(p=>!p.is_offer).length,o=prods.filter(p=>p.is_offer).length;
+  document.getElementById('st-all').textContent=t;
+  document.getElementById('st-n').textContent=n;
+  document.getElementById('st-o').textContent=o;
+  document.getElementById('cnt-n').textContent=nc;
+  document.getElementById('cnt-o').textContent=oc;
+  document.getElementById('sec-n').style.display=filt==='offer'?'none':'block';
+  document.getElementById('sec-o').style.display=filt==='normal'?'none':'block';
+  initDnD();
+}
+
+function buildCard(p){
+  const badge=p.badge_text?`<span class="pbadge">${p.badge_text}</span>`:'';
+  const oldP=p.old_price?`<span class="pold">${p.old_price}</span>`:'';
+  const fb=`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230d1320' width='100' height='100'/><text y='.9em' font-size='60' x='50%25' text-anchor='middle'>📦</text></svg>`;
+  return `<div class="pcard" data-id="${p.id}">
+    <div class="pdrag" title="اسحب لإعادة الترتيب">⠿</div>
+    <div class="pthumb"><img src="${p.img}" loading="lazy" onerror="this.src='${fb}'">${badge}</div>
+    <div class="pbody">
+      <div class="ptype">${p.is_offer?'🔥 عرض':'📂 رئيسي'}${p.cat?' · '+p.cat:''}</div>
+      <div class="pname">${p.name}</div>
+      <div class="pprices">${oldP}<span class="pnow">${p.price}</span></div>
+    </div>
+    <div class="pacts">
+      <button class="pab ed" onclick="openEdit(${p.id})">✏️ تعديل</button>
+      <button class="pab dl" onclick="askDel(${p.id})">🗑️</button>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+//  SORT MODE
+// ══════════════════════════════════════════
+function toggleSortMode(){
+  sortMode=!sortMode;
+  const btn=document.getElementById('sort-btn');
+  const banner=document.getElementById('sort-banner');
+  btn.classList.toggle('sort-on',sortMode);
+  banner.classList.toggle('on',sortMode);
+  renderAll();
+  if(sortMode)toast('✦ وضع الترتيب — اسحب المنتجات من الرمز ⠿','warning');
+}
+
+// ══════════════════════════════════════════
+//  DRAG & DROP
+// ══════════════════════════════════════════
+function initDnD(){
+  const opts={
+    animation:240,ghostClass:'sortable-ghost',dragClass:'sortable-drag',
+    handle:'.pdrag',
+    delay: sortMode ? 0 : 200,
+    delayOnTouchOnly: !sortMode,
+    touchStartThreshold:3,
+    forceFallback:false,
+    onEnd:()=>{syncDOM();if(sortMode){document.getElementById('sort-banner').classList.add('on');}}
+  };
+  const gn=document.getElementById('gn'),go=document.getElementById('go');
+  if(sortN)sortN.destroy();if(sortO)sortO.destroy();
+  if(gn.querySelector('.pcard'))sortN=new Sortable(gn,opts);
+  if(go.querySelector('.pcard'))sortO=new Sortable(go,opts);
+}
+
+function syncDOM(){
+  const arr=[];
+  document.querySelectorAll('#gn .pcard').forEach(el=>{const p=prods.find(x=>x.id===+el.dataset.id);if(p)arr.push(p);});
+  document.querySelectorAll('#go .pcard').forEach(el=>{const p=prods.find(x=>x.id===+el.dataset.id);if(p)arr.push(p);});
+  prods=arr;
+}
+
+async function saveOrder(){
+  sortMode=false;
+  document.getElementById('sort-btn').classList.remove('sort-on');
+  document.getElementById('sort-banner').classList.remove('on');
+  renderAll();
+  await pushToGH('✅ تم حفظ الترتيب الجديد');
+}
+
+// ══════════════════════════════════════════
+//  IMAGE UPLOAD — same quality as before
+// ══════════════════════════════════════════
+function handleFile(inp){
+  const file=inp.files[0];if(!file)return;
+  const st=document.getElementById('upst');
+  st.textContent='⏳ جاري ضغط الصورة...';st.style.color='var(--a)';
+  const reader=new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload=e=>{
+    const img=new Image();img.src=e.target.result;
+    img.onload=async()=>{
+      const canvas=document.createElement('canvas');
+      let{width:w,height:h}=img;
+      const MAX=800;
+      if(w>h){if(w>MAX){h*=MAX/w;w=MAX;}}else{if(h>MAX){w*=MAX/h;h=MAX;}}
+      canvas.width=Math.round(w);canvas.height=Math.round(h);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      const b64=canvas.toDataURL('image/webp',0.8).split(',')[1];
+      await uploadImg(b64);
+    };
+  };
+}
+
+async function uploadImg(b64){
+  const st=document.getElementById('upst');
+  st.textContent='⏳ جاري رفع الصورة...';st.style.color='var(--a)';
+  const fname=`images/img_${Date.now()}_${Math.floor(Math.random()*9000+1000)}.webp`;
+  const url=`https://api.github.com/repos/${GH.user}/${GH.repo}/contents/${fname}`;
+  try{
+    const r=await fetch(url,{method:'PUT',headers:ghH(),body:JSON.stringify({message:'Upload image',content:b64})});
+    if(!r.ok)throw 0;
+    const cdn=`https://cdn.jsdelivr.net/gh/${GH.user}/${GH.repo}@main/${fname}`;
+    document.getElementById('fimg').value=cdn;
+    const prev=document.getElementById('iprev');prev.src=cdn;prev.style.display='block';
+    st.textContent='✅ تم الرفع بنجاح!';st.style.color='var(--g)';
+  }catch{st.textContent='❌ فشل الرفع، حاول مرة أخرى';st.style.color='var(--p)';}
+}
+
+// ══════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════
+function openModal(){
+  resetForm();document.getElementById('mttl').textContent='📦 إضافة منتج جديد';
+  document.getElementById('mov').classList.add('on');document.getElementById('msheet').scrollTop=0;
+}
+function openEdit(id){
+  const p=prods.find(x=>x.id===id);if(!p)return;
+  ['fid','fname','fprice','fold','fcat','fbadge','fdesc','ftype','fimg'].forEach(k=>{
+    const v={fid:p.id,fname:p.name,fprice:p.price,fold:p.old_price||'',fcat:p.cat||'',fbadge:p.badge_text||'',fdesc:p.desc||'',ftype:p.is_offer?'offer':'normal',fimg:p.img};
+    document.getElementById(k).value=v[k];
+  });
+  const prev=document.getElementById('iprev');prev.src=p.img;prev.style.display='block';
+  document.getElementById('upst').textContent='';
+  document.getElementById('mttl').textContent='✏️ تعديل المنتج';
+  document.getElementById('mov').classList.add('on');document.getElementById('msheet').scrollTop=0;
+}
+function closeModal(){document.getElementById('mov').classList.remove('on');}
+function handleMOvl(e){if(e.target===document.getElementById('mov'))closeModal();}
+function resetForm(){
+  ['fid','fname','fprice','fold','fcat','fbadge','fdesc','fimg'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('iprev').style.display='none';
+  document.getElementById('upst').textContent='';
+  document.getElementById('ffile').value='';
+  document.getElementById('ftype').value='normal';
+}
+
+// ══════════════════════════════════════════
+//  SAVE / DELETE
+// ══════════════════════════════════════════
+async function saveProduct(){
+  const id=document.getElementById('fid').value;
+  const name=document.getElementById('fname').value.trim();
+  const price=document.getElementById('fprice').value.trim();
+  const img=document.getElementById('fimg').value.trim();
+  if(!name||!price||!img)return toast('الاسم، السعر، والصورة مطلوبة','warning');
+  const obj={id:id?+id:Date.now(),name,price,img,
+    desc:document.getElementById('fdesc').value,old_price:document.getElementById('fold').value,
+    badge_text:document.getElementById('fbadge').value,cat:document.getElementById('fcat').value,
+    is_offer:document.getElementById('ftype').value==='offer'};
+  if(id){const i=prods.findIndex(p=>p.id==id);prods[i]=obj;}else prods.unshift(obj);
+  await pushToGH(id?'✅ تم تحديث المنتج':'✅ تمت إضافة المنتج');
+  closeModal();
+}
+function askDel(id){delId=id;document.getElementById('cdelb').onclick=()=>doDel(id);document.getElementById('cov').classList.add('on');}
+function closeConfirm(){document.getElementById('cov').classList.remove('on');delId=null;}
+function handleCOvl(e){if(e.target===document.getElementById('cov'))closeConfirm();}
+async function doDel(id){closeConfirm();prods=prods.filter(p=>p.id!==id);await pushToGH('🗑️ تم حذف المنتج');}
+
+// ══════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════
+function setFilter(f,el){filt=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderAll();}
+function goOffers(){showScreen('products');setTimeout(()=>document.getElementById('sec-o')?.scrollIntoView({behavior:'smooth'}),100);}
+function loader(on,txt){const el=document.getElementById('ldr');el.classList.toggle('on',on);if(txt)document.getElementById('ltxt').textContent=txt;}
+function toast(msg,type='success'){
+  const icons={success:'✅',danger:'❌',warning:'⚠️'};
+  const wrap=document.getElementById('tw');
+  const el=document.createElement('div');el.className=`toast ${type}`;
+  el.innerHTML=`<span>${icons[type]}</span><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{el.style.animation='tOut .3s ease forwards';setTimeout(()=>el.remove(),300);},3000);
+}
+
+// ══════════════════════════════════════════
+//  ████ GROWTH PLAN ████
+// ══════════════════════════════════════════
+const gWeeks={
+  1:{title:"الأسبوع الأول — التقييم والتأسيس",motivation:"سواء كان متجرك جديداً أو قديماً، ابدأ دائماً بالتقييم الصادق. لا يمكنك تحسين ما لا تفهمه — هذا الأسبوع للتشخيص والتأسيس.",sections:[
+    {id:"audit",name:"تدقيق المتجر وتحسينه",icon:"🔍",desc:"قيّم واحسّن — للجديد والقديم",color:"#3b82f6",bg:"rgba(59,130,246,0.12)",tip:"للمتجر الجديد: ابنِ الأساس بشكل صحيح. للمتجر القديم: عيناً جديدة تكشف فرصاً خفية.",tasks:[
+      {name:"مراجعة صور المنتجات ووصفها",desc:"للجديد: أضف 5+ منتجات بصور احترافية. للقديم: حدّث أقل 3 منتجات ذات صور قديمة",day:"الأحد",priority:"high"},
+      {name:"مراجعة سعر كل منتج مقارنة بالسوق",desc:"هل أسعارك تنافسية؟ هل تعكس جودتك الحقيقية؟ اسمح لنفسك بالتعديل بجرأة",day:"الاثنين",priority:"high"},
+      {name:"تحسين شعار المتجر وبايو المنصات",desc:"البايو يجيب: من أنت؟ ماذا تبيع؟ لماذا أنا؟ — ٣ أسئلة في جملتين كحد أقصى",day:"الاثنين",priority:"high"},
+      {name:"اختبار تجربة الشراء بعيون العميل",desc:"اطلب من شخص لم يشترِ منك أن يجرب العملية ويخبرك أين تعثّر",day:"الثلاثاء",priority:"med"},
+      {name:"مراجعة وتحديث سياسة الشحن والإرجاع",desc:"الوضوح يبني الثقة — العميل يريد أن يعرف ماذا يحدث لو حدث شيء",day:"الأربعاء",priority:"med"},
+    ]},
+    {id:"brand",name:"الهوية والحضور الرقمي",icon:"✨",desc:"هوية قوية = ثقة فورية",color:"#8b5cf6",bg:"rgba(139,92,246,0.12)",tip:"الهوية الواضحة والمتسقة تجعل متجرك يبدو أكبر وأكثر موثوقية — وهذا ذكاء وليس خداعاً.",tasks:[
+      {name:"توحيد الهوية البصرية عبر المنصات",desc:"نفس الاسم، نفس الشعار، نفس الألوان — على انستجرام وواتساب وأي منصة تستخدمها",day:"الأحد",priority:"high"},
+      {name:"كتابة ٣ منشورات تعريفية لمن لا يعرفك",desc:"منشور عن قصتك، منشور عن أبرز منتج، منشور عن لماذا يجب أن يثق بك العميل",day:"الاثنين",priority:"med"},
+      {name:"إنشاء قصة 'من وراء الكواليس'",desc:"أرِ عميلك كيف تعمل — الشفافية تبني علاقة أعمق من أي إعلان",day:"الثلاثاء",priority:"med"},
+      {name:"تحديد ٢ منصة فقط للتركيز عليهما",desc:"الانتشار على كل المنصات بمحتوى متقطع يضر أكثر مما ينفع",day:"الأحد",priority:"high"},
+    ]},
+    {id:"content1",name:"خطة المحتوى الأسبوعية",icon:"🎬",desc:"محتوى مخطط = نتائج مضمونة",color:"#fb923c",bg:"rgba(251,146,60,0.12)",tip:"خصص ساعة واحدة في الأسبوع للتخطيط لتوفير ساعات من القلق والتردد.",tasks:[
+      {name:"تصوير ريلز واحد لأبرز منتج أو خدمة",desc:"15-30 ثانية، أضف نصاً واضحاً — الفيديو يصل لـ 10x مقارنة بالصور",day:"الثلاثاء",priority:"high"},
+      {name:"إنشاء تقويم محتوى للأسبوع القادم",desc:"يوم الاثنين: منتج | الأربعاء: تعليمي | الجمعة: تفاعل",day:"الخميس",priority:"high"},
+      {name:"تصوير ٣ صور احترافية لمنتجاتك",desc:"خلفية بيضاء أو تعكس هوية متجرك — الإضاءة الطبيعية كافية في البداية",day:"الأربعاء",priority:"med"},
+      {name:"كتابة كابشن يبدأ بسؤال أو مشكلة",desc:"ابدأ بما يهم العميل قبل أن تذكر المنتج — الناس تتوقف عند من يفهمها",day:"الأربعاء",priority:"med"},
+    ]},
+    {id:"growth1",name:"النمو العضوي والمبادرة",icon:"🌱",desc:"أول خطوات النمو بلا إعلانات",color:"#10b981",bg:"rgba(16,185,129,0.12)",tip:"للجديد: أول ١٠ مبيعات أصعب ما يكون. للقديم: عملاؤك القدامى أفضل قناة نمو مجانية.",tasks:[
+      {name:"إرسال رسائل شخصية لـ ١٠ معارف أو عملاء قدامى",desc:"رسالة حقيقية وليست نسخ-لصق. للجديد: اطلب تجربة. للقديم: أخبر بجديدك",day:"الأحد",priority:"high"},
+      {name:"إنشاء عرض لفترة محدودة",desc:"خصم 10-15% لأول طلبات هذا الأسبوع فقط — يوجد إلحاحاً ويسرّع القرار",day:"الاثنين",priority:"high"},
+      {name:"التفاعل مع ١٠ حسابات مرتبطة بمجالك يومياً",desc:"تعليقات ذات قيمة حقيقية — الهدف: تذكرك كخبير في مجالك",day:"يومياً",priority:"med"},
+      {name:"طلب تقييم من أول عميل تحصل عليه",desc:"التقييمات أقوى أداة تسويقية مجانية — اطلبها بأسلوب لطيف بعد التسليم",day:"الجمعة",priority:"high"},
+    ]},
+    {id:"ops1",name:"تجربة العميل",icon:"⚙️",desc:"تجربة لا تُنسى = عميل يعود",color:"#f0b429",bg:"rgba(240,180,41,0.12)",tip:"عميل سعيد يجلب ٣ عملاء بدون تكلفة. عميل غير سعيد يُبعد ١٠.",tasks:[
+      {name:"وضع رسالة تأكيد طلب واضحة وودية",desc:"أكد الطلب، أعطِ موعد تسليم واضح، اشكر العميل بصدق — ٣ جمل تصنع فارقاً",day:"الاثنين",priority:"high"},
+      {name:"الرد على كل رسالة خلال ساعتين كحد أقصى",desc:"وقت الاستجابة السريع يحسم قرار الشراء في أغلب الحالات",day:"يومياً",priority:"high"},
+      {name:"إضافة لمسة شخصية لكل طلب",desc:"كرت صغير مكتوب يدوياً يُذكر ويُشارك — أثره أكبر من أي إعلان",day:"الأربعاء",priority:"med"},
+    ]},
+  ]},
+  2:{title:"الأسبوع الثاني — بناء الزخم",motivation:"حلل ما نجح الأسبوع الماضي وضاعف منه. البيانات لا تكذب — استمع لها وستوفر عليك جهداً هائلاً في الاتجاه الخطأ.",sections:[
+    {id:"analysis2",name:"تحليل الأداء والبيانات",icon:"📊",desc:"افهم ما يعمل قبل أن تضاعفه",color:"#3b82f6",bg:"rgba(59,130,246,0.12)",tip:"خصص ساعة واحدة كل أسبوع لقراءة أرقامك — هذه الساعة تحل محل أسابيع من العمل في الاتجاه الخطأ.",tasks:[
+      {name:"تحديد أكثر ٣ منشورات وصولاً وتحليل سببها",desc:"هل كان فيديو؟ سؤال؟ تقييم؟ افهم لماذا نجح ثم كرره بأشكال مختلفة",day:"الأحد",priority:"high"},
+      {name:"مراجعة زيارات المتجر ومصادرها",desc:"من أين يأتي الزوار؟ أي صفحات يزورون ثم يغادرون؟",day:"الأحد",priority:"high"},
+      {name:"حساب نسبة التحويل (زوار vs مشترون)",desc:"إذا كانت أقل من 1% فالمشكلة في المنتج أو السعر أو الصور",day:"الاثنين",priority:"med"},
+      {name:"جمع وتحليل أسئلة العملاء المتكررة",desc:"كل سؤال يتكرر هو فرصة: إما أضفه للوصف أو اصنع منه محتوى مفيداً",day:"الاثنين",priority:"high"},
+    ]},
+    {id:"content2",name:"تصعيد المحتوى",icon:"🎯",desc:"محتوى أذكى وأكثر تأثيراً",color:"#8b5cf6",bg:"rgba(139,92,246,0.12)",tip:"المحتوى الذي يحل مشكلة أو يجيب سؤالاً يُشارك أكثر من المحتوى الترفيهي.",tasks:[
+      {name:"نشر فيديو 'كيف تستخدم المنتج'",desc:"أكثر محتوى يُشارك في التجارة الإلكترونية — يجيب على سؤال العميل قبل أن يسأل",day:"الاثنين",priority:"high"},
+      {name:"نشر تقييم أو شهادة عميل حقيقي",desc:"اطلب من عميلك صورة أو مقطعاً قصيراً مع قصته — الدليل الاجتماعي لا يُقدّر بثمن",day:"الأربعاء",priority:"high"},
+      {name:"إنشاء محتوى تعليمي مرتبط بمجالك",desc:"'أفضل ٥ طرق لـ...' — يحصل على حفظ ومشاركة أكثر بكثير",day:"الخميس",priority:"med"},
+      {name:"إضافة أو تحديث ٣ منتجات في المتجر",desc:"المتجر الذي يتجدد باستمرار يشجع الزوار على العودة",day:"الأربعاء",priority:"med"},
+    ]},
+    {id:"community",name:"بناء المجتمع والتفاعل",icon:"🤝",desc:"تحويل المتابع لعميل مخلص",color:"#fb923c",bg:"rgba(251,146,60,0.12)",tip:"المجتمع هو الميزة التنافسية التي لا يستطيع أحد نسخها.",tasks:[
+      {name:"إنشاء قصة استطلاع تفاعلي",desc:"'ما المنتج الذي تريده قادماً؟' — تفاعل + بيانات مجانية",day:"الثلاثاء",priority:"high"},
+      {name:"الرد على كل تعليق بشكل شخصي يذكر الاسم",desc:"لا ردود جاهزة أبداً — اذكر اسم الشخص وأضف شيئاً خاصاً",day:"يومياً",priority:"high"},
+      {name:"إنشاء مسابقة بسيطة",desc:"جائزة بسيطة + قواعد سهلة = وصول عضوي كبير بدون تكلفة",day:"الأربعاء",priority:"med"},
+    ]},
+    {id:"organic",name:"التسويق العضوي الذكي",icon:"🌊",desc:"انتشر بدون ريال واحد",color:"#10b981",bg:"rgba(16,185,129,0.12)",tip:"التسويق العضوي يبني أساساً يدوم. الانتشار المدفوع يتوقف حين يتوقف الدفع.",tasks:[
+      {name:"التواصل مع مؤثر صغير في مجالك (5-30 ألف)",desc:"أرسل له منتجاً بلا شروط أولاً — المؤثر الصغير أكثر مصداقية من الكبير",day:"الاثنين",priority:"high"},
+      {name:"المشاركة في مجموعات واتساب أو تلجرام",desc:"ساهم بمعلومة أو نصيحة مفيدة بانتظام — كن مفيداً وستأتي الثقة",day:"يومياً",priority:"med"},
+      {name:"طلب تقييمات من عملاء راضين",desc:"٥ تقييمات جديدة تُغيّر مستوى ثقة المتجر كلياً",day:"الجمعة",priority:"high"},
+    ]},
+  ]},
+  3:{title:"الأسبوع الثالث — التسريع والشراكات",motivation:"الآن وقت التسريع. ما نجح في الأسبوعين الماضيين — ضاعفه. ما لم ينجح — أوقفه بلا تردد.",sections:[
+    {id:"scale",name:"تضخيم ما ينجح",icon:"⚡",desc:"ضاعف النتائج بنفس الجهد",color:"#f0b429",bg:"rgba(240,180,41,0.12)",tip:"التضخيم لا يعني فعل نفس الشيء أكثر — يعني فعله بشكل أذكى وأسرع.",tasks:[
+      {name:"تحديد أفضل ٢-٣ قنوات مبيعات وتضخيم الجهد فيها",desc:"ركز ٨٠٪ طاقتك حيث تأتي النتائج",day:"الأحد",priority:"high"},
+      {name:"إنشاء نظام إعادة نشر للمحتوى الناجح",desc:"حدد ٥ منشورات نجحت وأعد نشرها بطريقة مختلفة",day:"الثلاثاء",priority:"med"},
+      {name:"أتمتة الردود على الأسئلة المتكررة",desc:"وفّر وقتك الثمين — استخدم ردوداً محفوظة",day:"الاثنين",priority:"med"},
+      {name:"تحليل أفضل ٥ منتجات مبيعاً واستيعاد مخزونها",desc:"لا تترك المنتج الرابح ينفد",day:"الأحد",priority:"high"},
+    ]},
+    {id:"collab",name:"الشراكات والتعاون",icon:"🌐",desc:"نمو أسرع بالقوة الجماعية",color:"#3b82f6",bg:"rgba(59,130,246,0.12)",tip:"تعاون واحد ناجح يساوي أسابيع من العمل المنفرد.",tasks:[
+      {name:"التواصل مع ٣ متاجر مكملة لتبادل الترويج",desc:"تبادل قصص ومنشورات — كلاكما يستفيد بمتابعين جدد بدون أي تكلفة",day:"الاثنين",priority:"high"},
+      {name:"اقتراح تعاون محتوى مع مؤثر مناسب",desc:"ابدأ بإرسال قيمة أولاً — منتج مجاني يفتح أبواباً أكثر مما تتوقع",day:"الثلاثاء",priority:"high"},
+      {name:"إنشاء برنامج إحالة بسيط للعملاء الحاليين",desc:"'شارك متجرنا مع صديق واحصل على خصم ١٠٪'",day:"الأربعاء",priority:"high"},
+    ]},
+    {id:"retention3",name:"الاحتفاظ بالعملاء",icon:"❤️",desc:"العميل القديم = الذهب الحقيقي",color:"#f43f5e",bg:"rgba(244,63,94,0.12)",tip:"اكتساب عميل جديد يكلف ٥ أضعاف الاحتفاظ بعميل قديم.",tasks:[
+      {name:"إنشاء قناة تلجرام أو قائمة واتساب للعملاء",desc:"قناة مباشرة لا تعتمد على خوارزميات أي منصة — ملكك الرقمي الحقيقي",day:"الاثنين",priority:"high"},
+      {name:"إرسال عرض حصري للعملاء القدامى فقط",desc:"يشعرهم بالتقدير ويحفزهم على الشراء مجدداً",day:"الأربعاء",priority:"high"},
+      {name:"بناء قائمة VIP لأكثر العملاء ولاءً",desc:"عروض مبكرة، خدمة أسرع، منتجات قبل الإطلاق",day:"الخميس",priority:"med"},
+    ]},
+    {id:"upsell3",name:"زيادة قيمة الطلب",icon:"💎",desc:"بيع أكثر لنفس العميل",color:"#14b8a6",bg:"rgba(20,184,166,0.12)",tip:"الزيادة الأذكى في الإيراد تأتي من قيمة أعلى لكل عميل موجود.",tasks:[
+      {name:"إنشاء باقات أو مجموعات من منتجاتك",desc:"اجمع منتجين أو ثلاثة بسعر أفضل — يزيد قيمة الطلب",day:"الأحد",priority:"high"},
+      {name:"إضافة منتجات تكميلية لصفحة كل منتج رئيسي",desc:"يزيد متوسط قيمة الطلب بنسبة تصل لـ ٢٠-٣٠٪",day:"الاثنين",priority:"med"},
+    ]},
+  ]},
+  4:{title:"الأسبوع الرابع — الأنظمة والاستدامة",motivation:"النجاح الحقيقي هو ما يستمر. ابنِ أنظمة وليس مجرد مبيعات. المتجر الناجح يعمل بنظام وليس بجهد شخصي يستنزفك.",sections:[
+    {id:"systems",name:"بناء الأنظمة",icon:"🔧",desc:"اجعل متجرك يعمل بانتظام",color:"#6366f1",bg:"rgba(99,102,241,0.12)",tip:"كل عملية تكررها أكثر من ٣ مرات تستحق أن تكون نظاماً مكتوباً أو آلياً.",tasks:[
+      {name:"توثيق جميع العمليات اليدوية",desc:"دليل مكتوب لكل خطوة — يتيح لك التوسع أو تدريب مساعد",day:"الأحد",priority:"high"},
+      {name:"أتمتة رسائل الطلب والتأكيد والتسليم",desc:"العميل يتلقى تحديثاً في كل مرحلة تلقائياً",day:"الاثنين",priority:"high"},
+      {name:"إنشاء تقويم محتوى لشهر كامل قادم",desc:"تخلص من ضغط 'ماذا أنشر اليوم؟' إلى الأبد",day:"الثلاثاء",priority:"high"},
+      {name:"وضع هدف رقمي واضح لكل شهر قادم",desc:"هدف واحد رقمي قابل للقياس — ما لا يُقاس لا يتحسن",day:"الأربعاء",priority:"high"},
+    ]},
+    {id:"expansion",name:"التوسع والتطوير",icon:"🚀",desc:"خطوات ذكية للمرحلة التالية",color:"#10b981",bg:"rgba(16,185,129,0.12)",tip:"التوسع الذكي يعني إضافة شيء واحد في كل مرة ورؤية نتائجه قبل الخطوة التالية.",tasks:[
+      {name:"تحليل أكثر ٥ منتجات مبيعاً وتوسيع نطاقها",desc:"أضف ألوان، أحجام، نسخ محسنة للمنتجات التي أثبتت نجاحها",day:"الأحد",priority:"high"},
+      {name:"البحث عن منتجات تكمل ما تبيعه حالياً",desc:"ما الذي يشتريه عميلك قبل أو بعد منتجك؟",day:"الاثنين",priority:"high"},
+      {name:"وضع خطة نمو مكتوبة لـ ٣ أشهر قادمة",desc:"٣ أهداف رئيسية + خطوات عملية — اكتبها ولا تتركها في رأسك",day:"الخميس",priority:"high"},
+    ]},
+    {id:"review",name:"مراجعة الدورة والاستعداد للتكرار",icon:"🔁",desc:"تعلّم، احتفل، وابدأ أقوى",color:"#f0b429",bg:"rgba(240,180,41,0.12)",tip:"كل دورة ستعطيك نتائج أضخم من السابقة. الخطة لا تتغير — أنت من يتحسن مع كل تكرار.",tasks:[
+      {name:"كتابة ٣ انتصارات و٣ دروس من هذا الشهر",desc:"التأمل في التجربة يحول الأخطاء لحكمة والنجاحات لأنظمة",day:"الخميس",priority:"high"},
+      {name:"مقارنة أرقام هذا الشهر بالشهر السابق",desc:"نمو حتى لو صغير = تقدم حقيقي",day:"الخميس",priority:"high"},
+      {name:"تحديد نقطة ضعف للعمل عليها في الدورة القادمة",desc:"تحسين شيء واحد في كل دورة يراكم تحسيناً هائلاً",day:"الجمعة",priority:"med"},
+      {name:"الاحتفال بإنجاز الدورة والاستعداد للبدء من جديد 🎉",desc:"قيّم كم نمت، ما تعلمته، وما الذي تفخر به",day:"الجمعة",priority:"low"},
+    ]},
+    {id:"mindset",name:"التطوير الشخصي",icon:"🧠",desc:"أنت أهم أصول متجرك",color:"#fb923c",bg:"rgba(251,146,60,0.12)",tip:"المتجر الناجح يحتاج صاحباً يتعلم باستمرار.",tasks:[
+      {name:"قراءة مقالة أو مشاهدة فيديو تسويقي",desc:"خصص ٣٠ دقيقة أسبوعياً للتعلم المرتبط بعملك",day:"الأحد",priority:"med"},
+      {name:"تحديد ٣ أشياء تستنزف طاقتك",desc:"تخلص من المهام التي لا تُضيف قيمة حقيقية",day:"الأربعاء",priority:"med"},
+      {name:"تخصيص يوم راحة كامل خلال الأسبوع",desc:"قرارات أفضل تأتي من عقل مرتاح لا منهك",day:"السبت",priority:"low"},
+    ]},
+  ]},
+};
+
+let gCurWeek=1;
+let gState=JSON.parse(localStorage.getItem('mph_growth_v1')||'{}');
+if(!gState._cycle)gState._cycle=1;
+let gToastTimer;
+
+function gInit(){
+  gRenderWeek(1);
+  gInitStreak();
+  setTimeout(gUpdateProgress,300);
+}
+
+function gRenderWeek(w){
+  gCurWeek=w;
+  const data=gWeeks[w];if(!data)return;
+  document.getElementById('gwk').value=w;
+  document.querySelector('.gmot-q').innerHTML=`<strong>نصيحة الأسبوع:</strong> ${data.motivation}`;
+  document.getElementById('gcyc').textContent=`🔁 الدورة #${gState._cycle||1}`;
+  const cont=document.getElementById('gsecs');cont.innerHTML='';
+  data.sections.forEach((sec,si)=>{
+    const sk=`c${gState._cycle}_w${w}_${sec.id}`;
+    const done=sec.tasks.filter((_,ti)=>gState[`${sk}_t${ti}`]).length;
+    const div=document.createElement('div');div.className='gsec';div.style.animationDelay=`${.08+si*.06}s`;
+    let th='';
+    sec.tasks.forEach((task,ti)=>{
+      const isDone=gState[`${sk}_t${ti}`]||false;
+      if(ti>0)th+=`<div class="gtdiv"></div>`;
+      th+=`<div class="gtask${isDone?' done':''}" onclick="gToggle('${sk}',${ti})" data-sec="${sk}" data-ti="${ti}">
+        <div class="gtcheck"></div>
+        <div class="gtcont"><div class="gtn">${task.name}</div><div class="gtd">${task.desc}</div></div>
+        <div class="gtr"><div class="gtday">${task.day}</div><div class="gtpri pri-${task.priority}"></div></div>
+      </div>`;
+    });
+    div.innerHTML=`
+      <div class="gseh" onclick="gToggleSec(this)">
+        <div class="gset"><div class="gsei" style="background:${sec.bg};color:${sec.color}">${sec.icon}</div>
+          <div style="min-width:0"><div class="gsen">${sec.name}</div><div class="gsed">${sec.desc}</div></div>
+        </div>
+        <div class="gsem"><div class="gseb" style="background:${sec.bg};color:${sec.color}">${done}/${sec.tasks.length}</div><span class="gsec-chevron">▾</span></div>
+      </div>
+      <div class="gsecb">${th}<div class="gtip"><div class="tico">💡</div><p>${sec.tip}</p></div></div>`;
+    cont.appendChild(div);
+  });
+  gUpdateProgress();gCheckComplete();
+}
+
+function gToggleSec(h){h.parentElement.classList.toggle('collapsed');}
+
+function gToggle(sk,ti){
+  const key=`${sk}_t${ti}`;gState[key]=!gState[key];gSave();
+  const el=document.querySelector(`[data-sec="${sk}"][data-ti="${ti}"]`);
+  if(el)el.classList.toggle('done',gState[key]);
+  gUpdateSecBadge(sk);gUpdateProgress();gCheckComplete();
+  gToast(gState[key]?'✅ أحسنت! مهمة منجزة 🔥':'↩️ تم إلغاء التأشير');
+}
+
+function gUpdateSecBadge(sk){
+  const w=gCurWeek;const data=gWeeks[w];
+  const sec=data.sections.find(s=>`c${gState._cycle}_w${w}_${s.id}`===sk);if(!sec)return;
+  const done=sec.tasks.filter((_,ti)=>gState[`${sk}_t${ti}`]).length;
+  const tasks=document.querySelectorAll(`[data-sec="${sk}"]`);
+  if(tasks.length>0){const badge=tasks[0].closest('.gsec')?.querySelector('.gseb');if(badge)badge.textContent=`${done}/${sec.tasks.length}`;}
+}
+
+function gUpdateProgress(){
+  const data=gWeeks[gCurWeek];let total=0,done=0;
+  data.sections.forEach(sec=>{
+    const sk=`c${gState._cycle}_w${gCurWeek}_${sec.id}`;
+    total+=sec.tasks.length;
+    done+=sec.tasks.filter((_,ti)=>gState[`${sk}_t${ti}`]).length;
+  });
+  const pct=total>0?Math.round((done/total)*100):0;
+  const offset=220-(220*pct/100);
+  document.getElementById('gdone').textContent=done;
+  document.getElementById('gtotal').textContent=total;
+  document.getElementById('gpct').textContent=pct+'%';
+  document.getElementById('gpbl').textContent=pct+'%';
+  document.getElementById('rfill').style.strokeDashoffset=offset;
+  document.getElementById('gpbar').style.width=pct+'%';
+}
+
+function gCheckComplete(){
+  const data=gWeeks[gCurWeek];let total=0,done=0;
+  data.sections.forEach(sec=>{
+    const sk=`c${gState._cycle}_w${gCurWeek}_${sec.id}`;
+    total+=sec.tasks.length;done+=sec.tasks.filter((_,ti)=>gState[`${sk}_t${ti}`]).length;
+  });
+  const wc=document.getElementById('gwc'),cc=document.getElementById('gcc'),nb=document.getElementById('gnxtbtn');
+  if(done===total&&total>0){
+    wc.classList.add('show');
+    if(gCurWeek<4){document.getElementById('gwcmsg').textContent='رائع! انتقل للأسبوع التالي.';nb.style.display='inline-flex';cc.classList.remove('show');}
+    else{document.getElementById('gwcmsg').textContent='لقد أكملت الدورة كاملة! 🏆';nb.style.display='none';cc.classList.add('show');}
+  }else{wc.classList.remove('show');cc.classList.remove('show');}
+}
+
+function gNextWeek(){if(gCurWeek<4){gCurWeek++;document.getElementById('gwk').value=gCurWeek;gRenderWeek(gCurWeek);document.getElementById('sg').scrollTop=0;gToast('📅 انتقلت للأسبوع '+gCurWeek);}}
+function gRestartCycle(){if(!confirm('هل تريد بدء دورة جديدة؟'))return;gState._cycle=(gState._cycle||1)+1;gSave();gCurWeek=1;document.getElementById('gwk').value=1;gRenderWeek(1);gToast(`🔁 دورة جديدة #${gState._cycle}`);}
+function gChangeWeek(w){gRenderWeek(parseInt(w));}
+function gResetWeek(){if(!confirm('هل أنت متأكد من إعادة تعيين مهام هذا الأسبوع؟'))return;const data=gWeeks[gCurWeek];data.sections.forEach(sec=>{const sk=`c${gState._cycle}_w${gCurWeek}_${sec.id}`;sec.tasks.forEach((_,ti)=>delete gState[`${sk}_t${ti}`]);});gSave();gRenderWeek(gCurWeek);gToast('🔄 تم إعادة تعيين الأسبوع');}
+
+function gInitStreak(){
+  const today=new Date().getDay();
+  const days=document.querySelectorAll('.gsd');
+  days.forEach((el,i)=>{
+    const dk=`str_${i}`;
+    if(gState[dk])el.classList.add('active');
+    if(i===today)el.classList.add('today');
+    el.addEventListener('click',()=>{gState[dk]=!gState[dk];el.classList.toggle('active',gState[dk]);gSave();gUpdateStreak();});
+  });
+  gUpdateStreak();
+}
+
+function gUpdateStreak(){
+  let c=0;for(let i=0;i<7;i++){if(gState[`str_${i}`])c++;}
+  document.getElementById('gstreak').textContent=c;
+}
+
+function gSave(){
+  localStorage.setItem('mph_growth_v1',JSON.stringify(gState));
+  const now=new Date();
+  document.getElementById('glupd').textContent=now.toLocaleDateString('ar-SA')+' — '+now.toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});
+}
+
+function gToast(msg){
+  const t=document.getElementById('gtst');t.textContent=msg;t.classList.add('show');
+  clearTimeout(gToastTimer);gToastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+</script>
+</body>
+</html>
